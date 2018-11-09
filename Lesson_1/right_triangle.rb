@@ -4,25 +4,25 @@ puts "Введите сторону B"
 b = gets.chomp.to_f
 puts "Введите сторону C"
 c = gets.chomp.to_f
-hypotenuse = 0
-if a > c
+if a > b && a > c
   hypotenuse = a
-  side_B = b
-  side_c = c
-elsif c > b
-  hypotenuse = c
-  side_B = a
-  side_c = b
-else
+  side_a = b
+  side_b = c
+elsif b > a && b > c
   hypotenuse = b
-  side_B = a
-  side_c = c
+  side_a = a
+  side_b = c
+else
+  hypotenuse = c
+  side_a = a
+  side_b = b
 end
-
-if hypotenuse**2 == side_B**2 + side_c**2
+if hypotenuse**2 == side_a**2 + side_b**2
   puts "Это прямоугольный треугольник"
-elsif (a == b &&  b == c)
+elsif (a == b &&  b == c && a == c)
   puts "Равносторонний и равнобедренный треугольник"
-elsif side_B == side_c
-  puts "Равнобедренный"
+elsif (a == b) || (a == c) || (c == b)
+  puts "Равнобедренный треугольник"
+else
+  puts "Это самы простый треугольник"
 end
