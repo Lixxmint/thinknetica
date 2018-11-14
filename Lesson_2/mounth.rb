@@ -17,7 +17,7 @@ mounth = {:January => 31,
 }
 puts "Список месяцев в которых 31 день:"
 mounth.each do  |m, d|
-  if(d == 31)
+  if(d == 30)
     puts "#{m} - #{d}"
   end
 end
