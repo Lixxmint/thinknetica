@@ -1,5 +1,5 @@
 class Station
-  attr_reader: all_train
+  attr_reader :all_train
 
   def initialize(name_station)
     @name_station = name_station
@@ -7,10 +7,6 @@ class Station
   end
   def add_train(train)
     @all_train << train
-  end
-  def delete_train(train)
-    @train = train
-    @all_train.delete_at(train)
   end
   def trains_by_type(type)
     #@all_train.each { |train| train if train.type == type} надо разобрать
@@ -21,7 +17,8 @@ class Station
 end
 
 class Route
-  attr_accessor: station_list
+  attr_accessor :station_list
+
   def initialize(start_station, last_station)
     @station_list = [start_station, last_station]
   end
@@ -39,43 +36,55 @@ class Route
 end
 
 class Train
-  attr_accessor: speed
-  attr_accessor: count_wagons
+  attr_reader :count_wagons, :speed, :type_train
 
   def initialize(nubmer_train, type_train, count_wagons)
     @nubmer_train = nubmer_train
     @type_train = type_train
     @count_wagons = count_wagons
+    @current_route = nil
   end
-  def edit_speed
-    loop do
-      puts "Выберете пункт чтобы изменить скорость\n 1. Прибавить скорость на 1 пункт\n 2. Снизить скорость до 0\n 0. Выход\n"
-      speed_edit = gets.chomp
-      if speed_edit == "1"
-        @speed + 1
-      elsif speed_edit == "2" && @speed > 0
-        @speed = 0
-      elsif speed_edit == "0"
-        break
-      else
-        puts "Данная операция невозможна, т.к. скорость равна нулю, либо введена неверная команда"
-      end
-    end
+  def speed_up
+    @speed +=10 if @speed < 150
   end
-  def edit_wagons
-    if(@speed.zero?)
-      loop do
-        puts "Выберете пункт чтобы изменить кол-во вагонов\n 1. Добавить один вагон\n 2. Убрать один вагон\n 0. Выход\n"
-        operation_wagons = gets.chomp
-        if operation_wagons == "1" && @count_wagons > 0
-          @count_wagons + 1
-        elsif operation_wagons == "2"
-          @count_wagons - 1
-        elsif operation_wagons == "0"
-          break
-        end
-      end
-    else
-      puts "Данная операция недоступна, пока поезд движется"
-    end
+  def speed_down
+    @speed -=10 if @speed > 0
+  end
+  def stop
+    @speed = 0
+  end
+  def add_wagon
+    @count_wagons +=1 if @speed.zero?
+  end
+  def del_wagon
+      @count_wagons -=1 if @speed.zero? && @count_wagons > 0
+  end
+  def set_route(route)
+    @current_route = route
+    @station_index = 0
+  end
+  def move_forward
+    @station_index += 1 if @route.stations.size - 1 > @station_index
+  end
+
+  def move_backward
+    @station_index -= 1 unless @station_index.zero?
+  end
+
+  def previous_station
+    get_station_by_index @station_index - 1
+  end
+
+  def current_station
+    get_station_by_index @station_index
+  end
+
+  def next_station
+    get_station_by_index @station_index + 1
+  end
+
+  def get_station_by_index(index)
+    return nil if index < 0
+
+    @route.stations[index]
   end
