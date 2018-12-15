@@ -1,4 +1,4 @@
-class Cargo_Wagon < Wagon
+class CargoWagon < Wagon
   def initialize
     super('cargo')
   end

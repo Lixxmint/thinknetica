@@ -1,4 +1,4 @@
-class Passenger_Wagon < Wagon
+class PassengerWagon < Wagon
   def initialize
     super('passenger')
   end

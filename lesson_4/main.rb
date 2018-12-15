@@ -32,7 +32,6 @@ class Main
         end
     end
   end
-
 #будет использовано только в другом методе, в одном классе.
 private
   def create_station#Создавать станции
@@ -58,11 +57,11 @@ private
       break if train_type == 0
       train_name = show_messange("Введите название поезда или '0' для завершения", true)
       if train_type == 1
-        train = Passenger_Train.new(train_name)
+        train = PassengerTrain.new(train_name)
         puts "Пассажирский поезд c номером #{train.number} успешно создан"
         @trains << train
       elsif train_type == 2
-        train = Cargo_Train.new(train_name)
+        train = CargoTrain.new(train_name)
         puts "Товарный поезд c номером #{train.number} успешно создан"
         @trains << train
       else
@@ -79,11 +78,11 @@ private
       break if train_index == 0
       train = @trains[train_index]
       if train.type == "cargo"
-        wagon = Cargo_Wagon.new
+        wagon = CargoWagon.new
         train.add_wagon(wagon)
         puts "Вагон прицеплен к поезду #{train}"
       elsif train.type == "passenger"
-        wagon = Passenger_Wagon.new
+        wagon = PassengerWagon.new
         train.add_wagon(wagon)
         puts "Вагон прицеплен к поезду #{train.number}"
       else
@@ -139,7 +138,7 @@ private
         puts "============Управление маршрутами============"
         puts "Выберете маршрут:"
         show_route
-        route = @route[show_messange("Выберете маршрут:", true)]
+        route = @routes[show_messange("Выберете маршрут:", true)]
         puts "Выберете действие:\n
         [1] Добавить станцию
         [2] Удалить станцию
@@ -158,7 +157,7 @@ private
   def add_station_route
     show_stations
     station =  @stations[show_messange("Выберете станцию для добавления", true)]
-    route.add_station(station) if @station[station]
+    route.add_station(station) if @stations[station]
   end
   #Метод для удаления станции из маршрута
   def del_station_in_route
@@ -176,8 +175,8 @@ private
       show_stations
       first_station = @stations[show_messange("Выберете начальную станцию", true)]
       last_station = @stations[show_messange("Выберете конечную станцию", true)]
-      @routes << Route.new(name, first_station, last_station)
-      puts "Маршрут #{name} успешно создан"
+      @routes << route = Route.new(name, first_station, last_station)
+      puts "Маршрут #{name} успешно создан #{route.show_stations}"
     else
       puts "Необходимо больше 2-х станций для создание маршрута"
     end
@@ -213,18 +212,22 @@ def move_train
   puts "============Перемещение поезда по маршруту============"
   show_train
   train = @trains[show_messange("Выберете поезд для перемещения", true)]
-  if train
+    if train
     loop do
       puts "Поезд #{train.nubmer} находится на станции #{train.current_station}"
-      puts "[n] - для перемещения на следующую станцию" if train.next_station
-      puts "[p] - для перемещения на предыдущую станцию" if train.previous_station
-
-      choose = show_messange("")
-      case choose
-      when "n" then 
+      puts "[n] - для перемещения на следующую станцию"
+      puts "[p] - для перемещения на предыдущую станцию"
+      action = show_messange("")
+      break if action == nil
+        if action == "n"
+          train.move_forward
+        elsif action == "p"
+          train.move_backward
+        end
+      end
     end
   end
-end
+
   def show_menu
     puts "============Программа по управлению поездами============"
     puts "\nВыберете действие:\n

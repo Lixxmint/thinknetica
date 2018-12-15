@@ -1,4 +1,4 @@
-class Cargo_Train < Train
+class CargoTrain < Train
   def initialize(number)
     super(number, 'cargo', 0)
   end
