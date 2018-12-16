@@ -28,6 +28,7 @@ class Main
         when '6' then detach_wagon_of_train
         when '7' then move_train
         when '8' then show_stations_with_train
+        when '9' then show_stations
         when '0' then break
         end
     end
@@ -37,11 +38,10 @@ private
   def create_station#Создавать станции
     puts "============Создание станции============"
     loop do
-      station_name = show_messange("Введите название станции или '0' для завершения")
-      break if station_name == "0"
-      station = Station.new(station_name)
-      puts "Станция #{station.name} успешно создана"
-      @stations << station
+      station_name = show_messange("Введите название станции или ENTER для завершения")
+      break if station_name.empty?
+      @stations << Station.new(station_name)
+      puts "Станция #{station_name} успешно создана"
     end
   end
 #Создавать поезда
@@ -54,8 +54,8 @@ private
       [0] Назад
       "
       train_type = gets.chomp.to_i
-      break if train_type == 0
-      train_name = show_messange("Введите название поезда или '0' для завершения", true)
+      break if train_type.nil?
+      train_name = show_messange("Введите название поезда или ENTER для завершения")
       if train_type == 1
         train = PassengerTrain.new(train_name)
         puts "Пассажирский поезд c номером #{train.number} успешно создан"
@@ -64,6 +64,8 @@ private
         train = CargoTrain.new(train_name)
         puts "Товарный поезд c номером #{train.number} успешно создан"
         @trains << train
+      elsif train_name.empty?
+        return
       else
         puts "Ошибка ввода"
       end
@@ -74,8 +76,8 @@ private
     loop do
       show_train
       puts "Выберете поезд"
-      train_index = show_messange("Выберете поезд или '0' для завершения", true)
-      break if train_index == 0
+      train_index = show_messange("Выберете поезд или ENTER для завершения", true)
+      break if train_index.nil?
       train = @trains[train_index]
       if train.type == "cargo"
         wagon = CargoWagon.new
@@ -131,7 +133,7 @@ private
       [0] Назад
       "
       action_route = gets.chomp.to_i
-      break if action_route == "0"
+      break if action_route.nil?
       if action_route == 1
         create_route
       elsif action_route == 2
@@ -145,26 +147,38 @@ private
         [0] Назад
         "
         case gets.chomp
-          when '1' then add_station_route
-          when '2' then del_station_in_route
+          when '1' then add_station_route(route)
+          when '2' then del_station_in_route(route)
         end
       else
         puts "Команда не найдена!"
+        return
       end
     end
   end
   #Метод для добавления станций в маршрут
-  def add_station_route
+  def add_station_route(route)
     show_stations
-    station =  @stations[show_messange("Выберете станцию для добавления", true)]
-    route.add_station(station) if @stations[station]
+    station =  show_messange("Выберете станцию для добавления", true)
+    if @stations[station]
+      route.add_station(@stations[station])
+      puts "Станция успешно добавлена"
+    else
+      puts "Станция не найдена"
+      return
+    end
   end
   #Метод для удаления станции из маршрута
-  def del_station_in_route
+  def del_station_in_route(route)
     puts "Список станций маршрута #{route.name}"
     route.show_stations
-    route.delete_station[show_messange("Выберете станцию для удаления"), true]
-    puts "Станция успешно удалена!"
+    station = show_messange("Выберете станцию для удаления", true)
+    return if station.nil?
+    if route.delete_station(route.show_stations[station])
+      puts "Станция успешно удалена!"
+    else
+      puts "Неверный индекс"
+    end
   end
   #Метод для создания маршрута
   def create_route
@@ -176,7 +190,7 @@ private
       first_station = @stations[show_messange("Выберете начальную станцию", true)]
       last_station = @stations[show_messange("Выберете конечную станцию", true)]
       @routes << route = Route.new(name, first_station, last_station)
-      puts "Маршрут #{name} успешно создан #{route.show_stations}"
+      puts "Маршрут #{name} успешно создан"
     else
       puts "Необходимо больше 2-х станций для создание маршрута"
     end
@@ -192,7 +206,7 @@ private
   def assign_route
     puts "============Назначение маршрута поезду============"
     show_train
-    train = @trains[show_messange("Выберете поезд"),true]
+    train = @trains[show_messange("Выберете поезд",true)]
     if @trains[train]
       puts "Список маршрутов:\n"
       show_route
@@ -218,7 +232,7 @@ def move_train
       puts "[n] - для перемещения на следующую станцию"
       puts "[p] - для перемещения на предыдущую станцию"
       action = show_messange("")
-      break if action == nil
+      break if action.empty?
         if action == "n"
           train.move_forward
         elsif action == "p"
