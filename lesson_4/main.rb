@@ -14,8 +14,25 @@ class Main
     @stations = []
     @trains = []
     @routes = []
+    test_date
   end
+  def test_date
+    @stations << s1 = Station.new("station1")
+    @stations << s2 = Station.new("station2")
+    @stations << s3 = Station.new("station3")
+    @stations << s4 = Station.new("station4")
+    @stations << s5 = Station.new("station5")
+    @stations << s6 = Station.new("station6")
 
+    @trains << ct1 = CargoTrain.new("cargo_train1")
+    @trains << ct2 = CargoTrain.new("cargo_train2")
+    @trains << ct3 = CargoTrain.new("cargo_train3")
+    @trains << pt1 = PassengerTrain.new("passenger_train1")
+    @trains << pt2 = PassengerTrain.new("passenger_train2")
+    @trains << pt3 = PassengerTrain.new("passenger_train3")
+
+    @routes << route1 = Route.new("new_route","station1","station2")
+  end
   def start
     loop do
       show_menu
@@ -28,7 +45,6 @@ class Main
         when '6' then detach_wagon_of_train
         when '7' then move_train
         when '8' then show_stations_with_train
-        when '9' then show_stations
         when '0' then break
         end
     end
@@ -118,7 +134,7 @@ private
   end
 
   def show_route
-    puts "Список поездов:\n"
+    puts "Список доступных маршрутов:\n"
     @routes.each_with_index do |route, index|
       puts "[#{index}] Маршрут #{route.name}"
     end
@@ -206,13 +222,13 @@ private
   def assign_route
     puts "============Назначение маршрута поезду============"
     show_train
-    train = @trains[show_messange("Выберете поезд",true)]
+    train = show_messange("Выберете поезд",true)
     if @trains[train]
       puts "Список маршрутов:\n"
       show_route
-      route = @routes[show_messange("Выберете маршрут",true)]
+      route = show_messange("Выберете маршрут",true)
       if @routes[route]
-        train.set_route(route) if @routes[route]
+        @trains[train].set_route(@routes[route])
         puts "Маршрут установлен!"
       else
         "Маршрут не найден"
@@ -228,7 +244,7 @@ def move_train
   train = @trains[show_messange("Выберете поезд для перемещения", true)]
     if train
     loop do
-      puts "Поезд #{train.nubmer} находится на станции #{train.current_station}"
+      puts "Поезд #{train.number} находится на станции #{train.current_station}"
       puts "[n] - для перемещения на следующую станцию"
       puts "[p] - для перемещения на предыдущую станцию"
       action = show_messange("")
@@ -241,7 +257,19 @@ def move_train
       end
     end
   end
-
+  def show_stations_with_train
+    puts "Список станций и поездов на станции"
+    show_stations
+    station_index = show_messange("Выберете станцию",true)
+    return if station_index.nil?
+    station = @stations[station_index]
+    if station
+      puts "Список поездов на станции #{station.name}:"
+      station.all_train.each { |train| puts "#{train}"}
+    else
+      puts 'Неправельно указан индекс станции'
+    end
+  end
   def show_menu
     puts "============Программа по управлению поездами============"
     puts "\nВыберете действие:\n
@@ -256,5 +284,7 @@ def move_train
     [0] Выход"
   end
 end
+
+
 
 Main.new.start

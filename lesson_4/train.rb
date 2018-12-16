@@ -28,7 +28,7 @@ class Train
     @station_index = 0
   end
   def move_forward
-    @station_index += 1 if @route.stations.size - 1 > @station_index
+    @station_index += 1 if @route.station_list.size - 1 > @station_index
   end
   def move_backward
     @station_index -= 1 unless @station_index.zero?
