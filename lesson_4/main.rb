@@ -14,8 +14,27 @@ class Main
     @stations = []
     @trains = []
     @routes = []
+    test_date
   end
+  def test_date
+    @stations << s1 = Station.new("station1")
+    @stations << s2 = Station.new("station2")
+    @stations << s3 = Station.new("station3")
+    @stations << s4 = Station.new("station4")
+    @stations << s5 = Station.new("station5")
+    @stations << s6 = Station.new("station6")
 
+    @trains << ct1 = CargoTrain.new("cargo_train1")
+    @trains << ct2 = CargoTrain.new("cargo_train2")
+    @trains << ct3 = CargoTrain.new("cargo_train3")
+    @trains << pt1 = PassengerTrain.new("passenger_train1")
+    @trains << pt2 = PassengerTrain.new("passenger_train2")
+    @trains << pt3 = PassengerTrain.new("passenger_train3")
+
+    @routes << route1 = Route.new("new_route","station1","station2")
+
+    @trains[3].set_route(@routes[0])
+  end
   def start
     loop do
       show_menu
@@ -28,7 +47,6 @@ class Main
         when '6' then detach_wagon_of_train
         when '7' then move_train
         when '8' then show_stations_with_train
-        when '9' then show_stations
         when '0' then break
         end
     end
@@ -38,7 +56,7 @@ private
   def create_station#Создавать станции
     puts "============Создание станции============"
     loop do
-      station_name = show_messange("Введите название станции или ENTER для завершения")
+      station_name = show_message("Введите название станции или ENTER для завершения")
       break if station_name.empty?
       @stations << Station.new(station_name)
       puts "Станция #{station_name} успешно создана"
@@ -55,7 +73,7 @@ private
       "
       train_type = gets.chomp.to_i
       break if train_type.nil?
-      train_name = show_messange("Введите название поезда или ENTER для завершения")
+      train_name = show_message("Введите название поезда или ENTER для завершения")
       if train_type == 1
         train = PassengerTrain.new(train_name)
         puts "Пассажирский поезд c номером #{train.number} успешно создан"
@@ -76,26 +94,26 @@ private
     loop do
       show_train
       puts "Выберете поезд"
-      train_index = show_messange("Выберете поезд или ENTER для завершения", true)
+      train_index = show_message("Выберете поезд или ENTER для завершения", true)
       break if train_index.nil?
       train = @trains[train_index]
       if train.type == "cargo"
         wagon = CargoWagon.new
         train.add_wagon(wagon)
-        puts "Вагон прицеплен к поезду #{train}"
+        puts "Вагон прицеплен к поезду #{train.number}"
       elsif train.type == "passenger"
         wagon = PassengerWagon.new
         train.add_wagon(wagon)
         puts "Вагон прицеплен к поезду #{train.number}"
       else
-        puts "Поезд с номером #{train.number} не существует!"
+        puts "Неверный ввод"
       end
     end
   end
 #Отцеплять вагоны от поезда
   def detach_wagon_of_train
     show_train
-    train_index = show_messange("Выберете поезд", true)
+    train_index = show_message("Выберете поезд", true)
     train = @trains[train_index]
     if train
       train.del_wagon
@@ -107,7 +125,7 @@ private
 
   def show_train
     @trains.each_with_index do |train, index|
-      puts "[#{index}] Поезд #{train.number} - количество вагон #{train.count_wagons.size}"
+      puts "[#{index}] Поезд #{train.number} - количество вагон #{train.wagons.size}"
     end
   end
 
@@ -118,7 +136,6 @@ private
   end
 
   def show_route
-    puts "Список поездов:\n"
     @routes.each_with_index do |route, index|
       puts "[#{index}] Маршрут #{route.name}"
     end
@@ -140,7 +157,7 @@ private
         puts "============Управление маршрутами============"
         puts "Выберете маршрут:"
         show_route
-        route = @routes[show_messange("Выберете маршрут:", true)]
+        route = @routes[show_message("Выберете маршрут:", true)]
         puts "Выберете действие:\n
         [1] Добавить станцию
         [2] Удалить станцию
@@ -159,12 +176,12 @@ private
   #Метод для добавления станций в маршрут
   def add_station_route(route)
     show_stations
-    station =  show_messange("Выберете станцию для добавления", true)
+    station =  show_message("Выберете станцию для добавления", true)
     if @stations[station]
       route.add_station(@stations[station])
       puts "Станция успешно добавлена"
     else
-      puts "Станция не найдена"
+      puts "Станция не найдена или уже добавлена"
       return
     end
   end
@@ -172,7 +189,7 @@ private
   def del_station_in_route(route)
     puts "Список станций маршрута #{route.name}"
     route.show_stations
-    station = show_messange("Выберете станцию для удаления", true)
+    station = show_message("Выберете станцию для удаления", true)
     return if station.nil?
     if route.delete_station(route.show_stations[station])
       puts "Станция успешно удалена!"
@@ -184,11 +201,11 @@ private
   def create_route
     if @stations.size > 2
       puts "============Создание нового маршрута============"
-      name = show_messange("Введите имя маршрута")
+      name = show_message("Введите имя маршрута")
       puts "Доступные станции для добавления:"
       show_stations
-      first_station = @stations[show_messange("Выберете начальную станцию", true)]
-      last_station = @stations[show_messange("Выберете конечную станцию", true)]
+      first_station = @stations[show_message("Выберете начальную станцию", true)]
+      last_station = @stations[show_message("Выберете конечную станцию", true)]
       @routes << route = Route.new(name, first_station, last_station)
       puts "Маршрут #{name} успешно создан"
     else
@@ -196,8 +213,8 @@ private
     end
   end
   #Метод для ввывода сообщения и возврата переменной, ввёдной пользователем
-  def show_messange(messange, int = false)
-    print "#{messange}\n"
+  def show_message(message, int = false)
+    print "#{message}\n"
     input = gets.chomp
     return nil if input == nil
     int ? input.to_i : input
@@ -206,13 +223,13 @@ private
   def assign_route
     puts "============Назначение маршрута поезду============"
     show_train
-    train = @trains[show_messange("Выберете поезд",true)]
+    train = show_message("Выберете поезд",true)
     if @trains[train]
       puts "Список маршрутов:\n"
       show_route
-      route = @routes[show_messange("Выберете маршрут",true)]
+      route = show_message("Выберете маршрут",true)
       if @routes[route]
-        train.set_route(route) if @routes[route]
+        @trains[train].set_route(@routes[route])
         puts "Маршрут установлен!"
       else
         "Маршрут не найден"
@@ -222,17 +239,17 @@ private
     end
   end
 #Перемещать поезд по маршруту вперед и назад
-def move_train
-  puts "============Перемещение поезда по маршруту============"
-  show_train
-  train = @trains[show_messange("Выберете поезд для перемещения", true)]
+  def move_train
+    puts "============Перемещение поезда по маршруту============"
+    show_train
+    train = @trains[show_message("Выберете поезд для перемещения", true)]
     if train
-    loop do
-      puts "Поезд #{train.nubmer} находится на станции #{train.current_station}"
-      puts "[n] - для перемещения на следующую станцию"
-      puts "[p] - для перемещения на предыдущую станцию"
-      action = show_messange("")
-      break if action.empty?
+      loop do
+        puts "Поезд #{train.number} находится на станции #{train.current_station}"
+        puts "[n] - для перемещения на следующую станцию"
+        puts "[p] - для перемещения на предыдущую станцию"
+        action = show_message("")
+        break if action.empty?
         if action == "n"
           train.move_forward
         elsif action == "p"
@@ -241,7 +258,19 @@ def move_train
       end
     end
   end
-
+  def show_stations_with_train
+    puts "Список станций и поездов на станции"
+    show_stations
+    station_index = show_message("Выберете станцию",true)
+    return unless station_index
+    station = @stations[station_index]
+    if station
+      puts "Список поездов на станции #{station.name}:"
+      station.all_train.each { |train| puts "#{train}"}
+    else
+      puts 'Неправильно указан индекс станции'
+    end
+  end
   def show_menu
     puts "============Программа по управлению поездами============"
     puts "\nВыберете действие:\n
