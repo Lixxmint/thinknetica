@@ -5,9 +5,9 @@ class Train
   include NameCompany
   attr_reader :wagons, :speed, :type, :number
 
-  @@trains = []
+  @@trains = {}
   def self.find(number)
-    @@trains.find { |x| return x if x.number == number  }
+    @@trains[number]
   end
 
   def initialize(number, type, wagons)
