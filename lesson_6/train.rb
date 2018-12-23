@@ -16,6 +16,7 @@ class Train
     @wagons = []
     @route = nil
     @speed = 0
+    register_instance
   end
 
   def speed_up(speed)

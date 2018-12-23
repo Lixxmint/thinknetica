@@ -5,19 +5,18 @@ module InstanceCounter
   end
 
   module ClassMethods
-    attr_accessor :cout_instances
+    attr_writer :instances
 
     def instances
-      @cout_instances ||= 0
+      @instances ||= 0
     end
   end
 
   module InstanceMethods
-
     protected
 
     def register_instance
-      self.class.cout_instances +=1
+      self.class.instances += 1
     end
   end
 end
