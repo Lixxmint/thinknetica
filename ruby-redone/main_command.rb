@@ -1,14 +1,14 @@
 require_relative 'train'
 require_relative 'station'
 require_relative 'route'
-require_relative 'train_passenger'
-require_relative 'train_cargo'
+require_relative 'passenger_train'
+require_relative 'cargo_train'
 require_relative 'wagon'
 require_relative 'wagon_passenger'
 require_relative 'wagon_cargo'
 require_relative 'company_module'
 
-class Main_command
+class MainCommand
 
   def initialize
     @routes = []
@@ -23,9 +23,9 @@ class Main_command
         when '1' then create_station
         when '2' then create_trains
         when '3' then manage_route
-        when '4' then assign_route
-        when '5' then attach_wagon_to_train
-        when '6' then detach_wagon_of_train
+        when '4' then set_route
+        when '5' then add_wagon
+        when '6' then del_wagon
         when '7' then move_train
         when '8' then show_stations_with_train
         when '0' then break
@@ -40,6 +40,10 @@ class Main_command
     @stations << s4 = Station.new("station4")
     @stations << s5 = Station.new("station5")
     @stations << s6 = Station.new("station6")
+
+    @trains << train1 = PassengerTrain.new("number")
+    @trains << train2 = PassengerTrain.new("number2")
+    @trains << train3 = PassengerTrain.new("number3")
   end
 
   def show_menu
@@ -107,8 +111,8 @@ class Main_command
     puts "======Создать маршрут======"
     if @stations.size > 2
       show_stations
-      first = ask('Выберете начальную станцию',true)
-      last = ask('Выберете конечную станцию',true)
+      first = @stations[ask('Выберете начальную станцию',true)]
+      last = @stations[ask('Выберете конечную станцию',true)]
       name = ask('Выберете название маршрута')
       @routes << Route.new(name, first, last)
       puts "Маршрут #{name} создан"
@@ -120,39 +124,45 @@ class Main_command
   def edit_route
     puts "======Редатирование маршрута======"
     show_route
-    route = @routes[ask('Выберете маршрут', true)]
-    route.show_route
-    puts "\nВыберете действие:\n
-    [1] Добавить станцию
-    [2] Удалить станцию
-    [0] Выход"
-    puts "=========================================================="
-
-    case gets.chomp
-      when '1' then add_station_route(route)
-      when '2' then del_station_route(route)
+    route_index = ask('Выберете маршрут', true)
+    if  @routes[route_index]
+      route = @routes[route_index]
+      #route_info(route)
+      puts "\nВыберете действие:\n
+      [1] Добавить станцию
+      [2] Удалить станцию
+      [0] Выход"
+      puts "=========================================================="
+      case gets.chomp
+        when '1' then add_station_route(route)
+        when '2' then del_station_route(route)
+      end
+    else
+      puts "Маршрут не найден"
     end
   end
 
   def add_station_route(route)
     show_stations
-    station = ask('Выберете станцию для добавления', true)
-    if @stations[station]
+    station_index = ask('Выберете станцию для добавления', true)
+    station = @stations[station_index]
+    if @stations[station_index]
       route.add_station(station)
-      puts "Станция #{station} добавлена в маршрут"
-      route.show_route
+      puts "Станция #{station.name} добавлена в маршрут"
+      #route.show_route
     else
       puts "Нет такой станции"
     end
   end
 
   def del_station_route(route)
-    route.show_route
-    station = ask('Выберете станцию для удаления', true)
-    if @stations[station]
+    #route.show_route
+    station_index = ask('Выберете станцию для удаления', true)
+    if @stations[station_index]
+      station = @stations[station_index]
       route.del_station(station)
       puts "Станция #{station.name} удалена из маршрута"
-      route.show_route
+      #route.show_route
     else
       puts "Нет такой станции"
     end
@@ -161,11 +171,13 @@ class Main_command
   def set_route
     puts "============Назначить маршрут поезду============"
     show_route
-    route = ask('Выберете маршрут', true)
-    if @routes[route]
+    route_index = ask('Выберете маршрут', true)
+    if @routes[route_index]
+      route = @routes[route_index]
       show_train
-      train = ask('Выберете поезд, которому назначить маршрут', true)
-      if @trains[train]
+      train_index = ask('Выберете поезд, которому назначить маршрут', true)
+      if @trains[train_index]
+        train = @trains[train_index]
         train.set_route(route)
         puts "Маршрут #{route.name} назначен поезду #{train.number}"
         train.train_info
@@ -267,6 +279,14 @@ class Main_command
       puts "[#{index}] Маршрут #{route.name}"
     end
   end
+
+  def route_info(route)
+    return 'не задан' unless route
+
+    points = []
+    route.route.each { |r| points.push(r.name) }
+    points.join('-')
+  end
 end
 
-Main_command.new.start
+MainCommand.new.start

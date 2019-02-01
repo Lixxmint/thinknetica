@@ -20,7 +20,7 @@ class Route
   end
 
 #Для удаление пустых элементов.
-  def show_route_1
+  def route
     @stations.compact
   end
 end
