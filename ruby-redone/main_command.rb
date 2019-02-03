@@ -44,6 +44,8 @@ class MainCommand
     @trains << train1 = PassengerTrain.new("number")
     @trains << train2 = PassengerTrain.new("number2")
     @trains << train3 = PassengerTrain.new("number3")
+
+    @routes << route1 = Route.new("new_route",s1,s2)
   end
 
   def show_menu
@@ -82,7 +84,7 @@ class MainCommand
 
   def create_cargo_train
     number = ask('Введите номер поезда')
-    @trains << TrainCargo.new(number)
+    @trains << CargoTrain.new(number)
     puts "Грузовой поезд #{number} создан"
   end
 
@@ -103,7 +105,7 @@ class MainCommand
     case gets.chomp
       when '1' then create_route
       when '2' then edit_route
-      when nil
+      when nil then return
     end
   end
 
@@ -127,7 +129,7 @@ class MainCommand
     route_index = ask('Выберете маршрут', true)
     if  @routes[route_index]
       route = @routes[route_index]
-      #route_info(route)
+      puts "Маршрут => #{route_info(route)}"
       puts "\nВыберете действие:\n
       [1] Добавить станцию
       [2] Удалить станцию
@@ -149,22 +151,22 @@ class MainCommand
     if @stations[station_index]
       route.add_station(station)
       puts "Станция #{station.name} добавлена в маршрут"
-      #route.show_route
+      puts "Маршрут => #{route_info(route)}"
     else
       puts "Нет такой станции"
     end
   end
 
   def del_station_route(route)
-    #route.show_route
+    puts "Маршрут => #{route_info(route)}"
     station_index = ask('Выберете станцию для удаления', true)
-    if @stations[station_index]
-      station = @stations[station_index]
+    if route.stations[station_index]
+      station = route.stations[station_index]
       route.del_station(station)
       puts "Станция #{station.name} удалена из маршрута"
-      #route.show_route
+      puts "Маршрут => #{route_info(route)}"
     else
-      puts "Нет такой станции"
+      puts "Нет такой станции в маршруте"
     end
   end
 
@@ -194,10 +196,12 @@ class MainCommand
     show_train
     train = @trains[ask('Выберете поезд', true)]
     if train.type == :cargo
-      train.attach_wagon(WagonCargo.new)
+      train.attach_wagon(CargoWagon.new)
+      puts "Вагон добавлен"
       train.train_info
     elsif train.type == :passenger
-      train.attach_wagon(WagonPassenger.new)
+      train.attach_wagon(PassengerWagon.new)
+      puts "Вагон добавлен"
       train.train_info
     else
       puts "Неверный тип поезда"
@@ -270,7 +274,7 @@ class MainCommand
 
   def show_train
     @trains.each_with_index do |train, index|
-      puts "[#{index}] Поезд #{train.number} - количество вагон #{train.wagons.size}"
+      puts "[#{index}] Поезд #{train.number}(#{train.type}) - количество вагон #{train.wagons.size}"
     end
   end
 

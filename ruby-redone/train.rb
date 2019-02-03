@@ -29,7 +29,11 @@ class Train
   end
 
   def train_info
-    puts "==> Поезд #{:number}\nТип:#{@type}\nМаршрут: #{@route.name}\nКол-во вагонов: #{@wagons.size}"
+  #  if @route
+    #  puts "==> Поезд #{:number}\nТип:#{@type}\nМаршрут: #{@route.name}\nКол-во вагонов: #{@wagons.size}"
+  #  else
+      puts "==> Поезд #{:number}\nТип:#{@type}\nКол-во вагонов: #{@wagons.size}"
+  #  end
   end
 
    def speed_up

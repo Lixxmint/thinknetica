@@ -1,6 +1,6 @@
 require_relative 'wagon'
 
-class WagonPassenger < Wagon
+class PassengerWagon < Wagon
 
   def initialize
     super(:passenger)
