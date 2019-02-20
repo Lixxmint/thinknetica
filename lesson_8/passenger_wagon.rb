@@ -1,7 +1,6 @@
 require_relative 'wagon'
 
 class PassengerWagon < Wagon
-
   attr_reader :seat, :occupied_seat
 
   def initialize(seats)
@@ -28,8 +27,6 @@ class PassengerWagon < Wagon
   protected
 
   def validate!
-    if @seats <= 0
-      raise ArgumentError, 'Мест в вагоне должно быть больше нуля'
-    end
+    raise ArgumentError, 'Мест в вагоне должно быть больше нуля' if @seats <= 0
   end
 end

@@ -1,7 +1,6 @@
 require_relative 'wagon'
 
 class CargoWagon < Wagon
-
   attr_reader :volume, :occupied_volume
   def initialize(volume)
     @volume = volume
@@ -13,7 +12,7 @@ class CargoWagon < Wagon
   def fill(value)
     raise ArgumentError, "Не хватает объёма для заполнения. Объём заполнен #{occupied_volume}/#{volume}" if value_free - value < 0
 
-    @occupied_volume +=value
+    @occupied_volume += value
   end
 
   def value_free
@@ -27,8 +26,6 @@ class CargoWagon < Wagon
   protected
 
   def validate!
-    if @volume <= 0
-      raise ArgumentError, 'Объём должен быть больше нуля'
-    end
+    raise ArgumentError, 'Объём должен быть больше нуля' if @volume <= 0
   end
 end
