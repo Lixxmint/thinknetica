@@ -10,7 +10,9 @@ class CargoWagon < Wagon
   end
 
   def fill(value)
-    raise ArgumentError, "Не хватает объёма для заполнения. Объём заполнен #{occupied_volume}/#{volume}" if value_free - value < 0
+    if value_free - value < 0
+      raise ArgumentError, "Не хватает объёма для заполнения. Объём заполнен #{occupied_volume}/#{volume}"
+    end
 
     @occupied_volume += value
   end

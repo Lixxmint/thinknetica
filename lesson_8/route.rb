@@ -15,14 +15,21 @@ class Route
   end
 
   def add_station(station)
-    raise ArgumentError, "Станция #{station.name} уже есть маршруте" if @stations.include?(station)
+    if @stations.include?(station)
+      raise ArgumentError, "Станция #{station.name} уже есть маршруте"
+    end
 
     @stations.insert(-2, station)
   end
 
   def del_station(station)
-    raise ArgumentError, "Станции #{station.name} нет в маршруте" unless @stations.index(station)
-    raise ArgumentError, 'Нельзя удалить начальную или конечную станции' if @stations.first != station || @stations.last != station
+    unless @stations.index(station)
+      raise ArgumentError, "Станции #{station.name} нет в маршруте"
+    end
+
+    if @stations.first != station || @stations.last != station
+      raise ArgumentError, 'Нельзя удалить начальную или конечную станции'
+    end
 
     @stations.delete(station)
   end
@@ -35,7 +42,12 @@ class Route
   protected
 
   def validate!
-    raise ArgumentError, 'Параметром маршрута должна быть станция' if @stations.find { |s| s.class != Station }
-    raise ArgumentError, 'Начальная и конечная станции должны быть разные' if @start == @finish
+    if @stations.find { |s| s.class != Station }
+      raise ArgumentError, 'Параметром маршрута должна быть станция'
+    end
+
+    if @start == @finish
+      raise ArgumentError, 'Начальная и конечная станции должны быть разные'
+    end
   end
 end

@@ -61,7 +61,7 @@ class Train
     @wagons.delete_at(-1) unless moving?
   end
 
-  def set_route(route)
+  def route_set(route)
     @route = route
     @station_index = 0
     current_station.add_train(self)
