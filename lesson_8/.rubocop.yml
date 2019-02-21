@@ -1,8 +1,29 @@
 Metrics/LineLength:
   Max: 190
 
+Metrics/MethodLength:
+  Max: 30
+
 Style/ClassVars:
   Enabled: false
 
 Style/Documentation:
   Enabled: false
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/GuardClause:
+  Enabled: false
+
+Lint/UselessAssignment:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Max: 8
+
+Metrics/AbcSize:
+  Max: 50
